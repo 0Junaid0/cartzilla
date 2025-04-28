@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Checkout</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <h4>Choose Payment Method:</h4>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="payment_method" value="Stripe" checked>
+      <label class="form-check-label">Stripe</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="payment_method" value="bKash">
+      <label class="form-check-label">bKash</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="payment_method" value="Nagad">
+      <label class="form-check-label">Nagad</label>
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">Place Order</button>
+</form>
+{% endblock %}

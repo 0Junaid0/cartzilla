@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Welcome, {{ user.username }}!</h2>
+{% if user.role == 'seller' %}
+    {% if user.is_verified_seller %}
+        <p>Status: Verified Seller</p>
+    {% else %}
+        <p>Status: Awaiting Seller Verification</p>
+    {% endif %}
+{% else %}
+    <p>Status: Customer</p>
+{% endif %}
+{% if user.profile_picture %}
+    <img src="{{ user.profile_picture.url }}" width="100" height="100" class="rounded-circle mt-3">
+{% endif %}
+{% endblock %}
