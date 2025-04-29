@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
+
+from user.models import User
 from .models import Product, Category, ProductReview, BargainOffer
 from .forms import ProductForm, ReviewForm, BargainOfferForm
 from django.contrib.auth.decorators import login_required
@@ -26,6 +28,11 @@ def product_detail_view(request, pk):
         review_form = ReviewForm()
 
     return render(request, 'products/product_detail.html', {'product': product, 'reviews': reviews, 'review_form': review_form})
+
+def products_view(request):
+    products = Product.objects.all()
+    categories = Category.objects.all()
+    return render(request, 'products/products.html', {'products': products, 'categories': categories})
 
 @login_required
 def product_add_view(request):
@@ -76,3 +83,14 @@ def bargain_offer_view(request, pk):
     else:
         form = BargainOfferForm()
     return render(request, 'products/bargain_form.html', {'form': form})
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def seller_dashboard_view(request):
+    user: User = request.user
+    if not user.is_seller():
+        return redirect('home')
+
+    products = Product.objects.filter(seller=request.user)
+    return render(request, 'products/seller_dashboard.html', {'products': products})

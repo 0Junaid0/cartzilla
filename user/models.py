@@ -4,6 +4,10 @@ from django.utils.translation import gettext_lazy as _
 from PIL import Image
 
 class User(AbstractUser):
+    """
+    Custom User model for Cartzilla.
+    """
+
     class Roles(models.TextChoices):
         CUSTOMER = 'customer', _('Customer')
         SELLER = 'seller', _('Seller')
@@ -11,6 +15,12 @@ class User(AbstractUser):
     role = models.CharField(max_length=10, choices=Roles.choices, default=Roles.CUSTOMER)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     is_verified_seller = models.BooleanField(default=False)  # For seller verification
+
+    def is_seller(self) -> bool:
+        return self.role == User.Roles.SELLER
+
+    def is_customer(self) -> bool:
+        return self.role == User.Roles.CUSTOMER
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
