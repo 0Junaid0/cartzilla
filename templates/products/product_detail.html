@@ -7,21 +7,24 @@
 
 <h3>Reviews</h3>
 {% for review in reviews %}
-  <p><strong>{{ review.user.username }}</strong>: {{ review.rating }}/5</p>
-  <p>{{ review.comment }}</p>
+<p><strong>{{ review.user.username }}</strong>: {{ review.rating }}/5</p>
+<p>{{ review.comment }}</p>
 {% endfor %}
 
-{% if user.is_authenticated %}
-  <h4>Add Review</h4>
-  <form method="POST">
+{% if not user.is_authenticated %}
+<p><a href="{% url 'login' %}">Login</a> to review or offer.</p>
+{% elif user.is_customer %}
+<h4>Add Review</h4>
+<form method="POST">
     {% csrf_token %}
     {{ review_form.as_p }}
     <button type="submit" class="btn btn-success">Submit Review</button>
-  </form>
+</form>
 
-  <h4>Send Bargain Offer</h4>
-  <a href="{% url 'bargain_offer' product.pk %}" class="btn btn-warning">Offer Price</a>
-{% else %}
-  <p><a href="{% url 'login' %}">Login</a> to review or offer.</p>
+<h4>Send Bargain Offer</h4>
+<a href="{% url 'bargain_offer' product.pk %}" class="btn btn-warning">Offer Price</a>
+<a href="{% url 'add_to_cart' product.pk %}" class="btn btn-warning">Add to cart</a>
+
 {% endif %}
+
 {% endblock %}

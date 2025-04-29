@@ -21,6 +21,7 @@ class Order(models.Model):
         ('Pending', 'Pending'),
         ('Processing', 'Processing'),
         ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled'),
     ]
 
     PAYMENT_METHODS = [
@@ -30,6 +31,7 @@ class Order(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    address = models.TextField(max_length= 1000, blank=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
     payment_completed = models.BooleanField(default=False)

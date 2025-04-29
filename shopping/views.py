@@ -38,10 +38,12 @@ def checkout_view(request):
 
     if request.method == 'POST':
         payment_method = request.POST.get('payment_method')
+        address = request.POST.get('address')
         order = Order.objects.create(
             user=request.user,
             total_price=total,
             payment_method=payment_method,
+            address = address,
             payment_completed=True,  # simulate payment success
         )
 
@@ -61,7 +63,7 @@ def checkout_view(request):
 
 @login_required
 def order_history_view(request):
-    orders = Order.objects.filter(user=request.user)
+    orders = Order.objects.filter(user=request.user).order_by("-created_at")
     return render(request, 'shopping/order_history.html', {'orders': orders})
 
 @login_required

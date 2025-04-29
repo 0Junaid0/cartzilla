@@ -8,6 +8,7 @@
     <h5>Order #{{ order.id }} - {{ order.created_at|date:"SHORT_DATE_FORMAT" }}</h5>
     <p>Status: {{ order.status }} | Payment: {{ order.payment_method }}</p>
     <p>Total: ${{ order.total_price }}</p>
+    <p>Address: {{ order.address }}</p>
   </div>
 </div>
 {% empty %}
