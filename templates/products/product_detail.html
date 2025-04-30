@@ -11,15 +11,26 @@
 <p>{{ review.comment }}</p>
 {% endfor %}
 
+{% if user.is_customer %}
+<h4>Send Bargain Offer</h4>
+<a href="{% url 'bargain_offer' product.pk %}" class="btn btn-warning">Offer Price</a>
+<a href="{% url 'add_to_cart' product.pk %}" class="btn btn-warning">Add to cart</a>
+{% endif %}
+
+
 {% if not user.is_authenticated %}
 <p><a href="{% url 'login' %}">Login</a> to review or offer.</p>
-{% elif user.is_customer %}
+{% elif user.is_customer and can_review %}
 <h4>Add Review</h4>
 <form method="POST">
     {% csrf_token %}
     {{ review_form.as_p }}
     <button type="submit" class="btn btn-success">Submit Review</button>
 </form>
+{% elif already_reviewed %}
+    <p class="texted-success">You have already reviewed the product</p>
+{% elif already_reviewed %}
+    <p class="texted-success">You can only review the product once if you have completed the purchased</p>
 
 <h4>Send Bargain Offer</h4>
 <a href="{% url 'bargain_offer' product.pk %}" class="btn btn-warning">Offer Price</a>

@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
+from shopping.models import Order,OrderItem
 from user.models import User
 from .models import Product, Category, ProductReview, BargainOffer
 from .forms import ProductForm, ReviewForm, BargainOfferForm
@@ -14,8 +15,25 @@ def home_view(request):
 def product_detail_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
     reviews = product.reviews.all()
+    review_form = ReviewForm()
 
-    if request.method == 'POST' and request.user.is_authenticated:
+    can_review = False
+    already_reviewed = False
+
+    if request.user.is_authenticated:
+        cpmpleted_order = Order.objects.filter(user=request.user , status = 'Completed')
+        have_purchased = OrderItem.objects.filter(order__in = cpmpleted_order, product = product).exists()
+        already_reviewed = ProductReview.objects.filter(user=request.user, product=product).exists()
+        can_review = have_purchased and not already_reviewed
+
+        if request.method == 'POST':
+            if not have_purchased:
+                messages.error(request , "You need to purchase the product to review it")
+                return redirect('product_detail' , pk = product.pk)
+            if already_reviewed:
+                messages.error(request , "you have already reviewed the product")
+                return redirect('product+detail', pk=product.pk)
+
         review_form = ReviewForm(request.POST)
         if review_form.is_valid():
             review = review_form.save(commit=False)
@@ -27,7 +45,13 @@ def product_detail_view(request, pk):
     else:
         review_form = ReviewForm()
 
-    return render(request, 'products/product_detail.html', {'product': product, 'reviews': reviews, 'review_form': review_form})
+    return render(request, 'products/product_detail.html', {
+        'product': product,
+        'reviews': reviews,
+        'review_form': review_form,
+        'can_review' : can_review,
+        'already_reviewed' : already_reviewed,
+    })
 
 def products_view(request):
     products = Product.objects.all()
