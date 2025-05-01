@@ -10,6 +10,11 @@ from django.contrib import messages
 def home_view(request):
     products = Product.objects.all()
     categories = Category.objects.all()
+    query = request.GET.get('q')
+
+    if query:
+        products = products.filter(name__icontains=query)
+
     return render(request, 'products/home.html', {'products': products, 'categories': categories})
 
 def product_detail_view(request, pk):
