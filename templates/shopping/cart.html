@@ -25,6 +25,7 @@
 </table>
 <h3>Total: ${{ total }}</h3>
 <a href="{% url 'checkout' %}" class="btn btn-success">Checkout</a>
+<a href="{% url 'products' %}" class="btn btn-success">Add more products</a>
 {% else %}
 <p>Your cart is empty.</p>
 {% endif %}

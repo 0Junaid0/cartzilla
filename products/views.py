@@ -118,3 +118,17 @@ def seller_dashboard_view(request):
 
     products = Product.objects.filter(seller=request.user)
     return render(request, 'products/seller_dashboard.html', {'products': products})
+
+@login_required
+def delete_review_view(request, pk):
+    review = get_object_or_404(ProductReview, pk=pk)
+
+    if review.user != request.user:
+        messages.error(request, 'You cannot delete this review')
+        return redirect('product_detail')
+
+    product_id = review.product.pk
+    review.delete()
+    messages.success(request,'review deleted')
+    return redirect('product_detail', pk=product_id)
+

@@ -16,7 +16,10 @@
       {% for item in order.orderitem_set.all %}
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <div>
-          <strong>{{ item.product.name }}</strong><br>
+          <a href="{% url 'product_detail' item.product.pk%}"> <strong>{{ item.product.name }}</strong><br></a>
+          {% if order.status == "Completed" %}
+          <a href="{% url 'product_detail' item.product.pk %}">Add a review</a><br>
+          {% endif %}
           Quantity: {{ item.quantity }}<br>
           Price: ${{ item.price }}<br>
           Subtotal: ${{ item.subtotal }}

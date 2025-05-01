@@ -9,6 +9,12 @@
 {% for review in reviews %}
 <p><strong>{{ review.user.username }}</strong>: {{ review.rating }}/5</p>
 <p>{{ review.comment }}</p>
+{% if review.user == request.user %}
+        <form action="{% url 'delete_review' review.pk %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger">Delete your Review </button>
+        </form>
+{% endif %}
 {% endfor %}
 
 {% if user.is_customer %}
