@@ -44,8 +44,8 @@ def remove_from_cart(request, item_id):
 @login_required
 def checkout_view(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
-    cart_items = CartItem.objects.filter(cart=cart)
-    total = sum([(item.product.price * item.quantity) for item in cart_items])
+    cart_items: list[CartItem] = CartItem.objects.filter(cart=cart)
+    total = sum(item.subtotal() for item in cart_items)
 
     if request.method == 'POST':
         payment_method = request.POST.get('payment_method')
@@ -60,12 +60,11 @@ def checkout_view(request):
         )
 
         for item in cart_items:
-            price = request.session.get(f'bargain_price_{item.product.id}', item.product.price)
             OrderItem.objects.create(
                 order=order,
                 product=item.product,
                 quantity=item.quantity,
-                price=price,
+                price=item.price(),
             )
 
         cart_items.delete()  # Clear cart
