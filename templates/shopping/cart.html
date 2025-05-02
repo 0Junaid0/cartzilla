@@ -4,24 +4,26 @@
 
 {% if cart_items %}
 <table class="table">
-  <thead>
+    <thead>
     <tr>
-      <th>Product</th>
-      <th>Qty</th>
-      <th>Subtotal</th>
-      <th>Remove</th>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Subtotal</th>
+        <th>Remove</th>
     </tr>
-  </thead>
-  <tbody>
+    </thead>
+    <tbody>
     {% for item in cart_items %}
     <tr>
-      <td>{{ item.product.name }}</td>
-      <td>{{ item.quantity }}</td>
-      <td>${{ item.subtotal }}</td>
-      <td><a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger btn-sm">Remove</a></td>
+        <td>{{ item.product.name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>${{ item.price }}</td>
+        <td>${{ item.subtotal }}</td>
+        <td><a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger btn-sm">Remove</a></td>
     </tr>
     {% endfor %}
-  </tbody>
+    </tbody>
 </table>
 <h3>Total: ${{ total }}</h3>
 <a href="{% url 'checkout' %}" class="btn btn-success">Checkout</a>

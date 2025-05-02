@@ -41,7 +41,7 @@ def login_view(request):
 
     dashboard_url = 'dashboard'
     if user.role == User.Roles.SELLER:
-        dashboard_url = 'seller_dashboard'
+        dashboard_url = 'dashboard'
 
     return redirect(dashboard_url)
 
