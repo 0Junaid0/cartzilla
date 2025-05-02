@@ -3,11 +3,11 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 
+from products.models import Product, BargainOffer
 from .forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 
 from .models import User
-
 
 @require_http_methods(['POST', 'GET'])
 def register_view(request):
@@ -34,6 +34,7 @@ def login_view(request):
     user: User | None = authenticate(request, username=username, password=password)
     if user is None:
         messages.error(request, 'Invalid username or password.')
+        return redirect('login')
 
     login(request, user)
     messages.success(request, 'Login successful!')
@@ -52,4 +53,13 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
-    return render(request, 'user/dashboard.html')
+    user: User = request.user
+    if not user.is_seller():
+       return  render(request, 'user/dashboard.html')
+
+    products = Product.objects.filter(seller=request.user)
+    offers = BargainOffer.objects.filter(product__in=products, is_accepted__isnull=True)
+
+    return render(request, 'user/dashboard.html', {'products': products, 'offers': offers, })
+
+

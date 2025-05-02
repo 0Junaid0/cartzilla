@@ -116,6 +116,24 @@ def bargain_offer_view(request, pk):
 from django.contrib.auth.decorators import login_required
 
 @login_required
+def respond_bargain_offer_view(request, offer_id, action):
+    offer = get_object_or_404(BargainOffer , id=offer_id)
+
+    if offer.product.seller != request.user:
+        messages.error(request, 'You are not elligible')
+        return redirect('home')
+
+    if action == 'accept':
+        offer.is_accepted = True
+        messages.success(request, 'accpeted the bargain')
+    elif action == 'reject':
+        offer.is_accepted = False
+        messages.success(request, 'rejected the bargain')
+
+    offer.save()
+    return redirect('seller_dashboard')
+
+@login_required
 def seller_dashboard_view(request):
     user: User = request.user
     if not user.is_seller():

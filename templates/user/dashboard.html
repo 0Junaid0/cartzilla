@@ -4,6 +4,19 @@
 {% if user.role == 'seller' %}
     {% if user.is_verified_seller %}
         <p>Status: Verified Seller</p>
+        <h3>Pending Bargain Offers</h3>
+        {% for offer in offers %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    <p><strong>{{ offer.buyer.username }}</strong> offered ${{ offer.offer_price }} for <strong>{{ offer.product.name }}</strong></p>
+                    <a href="{% url 'respond_bargain_offer' offer.id 'accept' %}" class="btn btn-sm btn-success">Accept</a>
+                    <a href="{% url 'respond_bargain_offer' offer.id 'reject' %}" class="btn btn-sm btn-danger">Reject</a>
+                </div>
+            </div>
+            {% empty %}
+                <p>No pending bargain offers.</p>
+        {% endfor %}
+
     {% else %}
         <p>Status: Awaiting Seller Verification</p>
     {% endif %}
