@@ -6,6 +6,7 @@ from .models import Product, Category, ProductReview, BargainOffer
 from .forms import ProductForm, ReviewForm, BargainOfferForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils import timezone
 
 def home_view(request):
     products = Product.objects.all()
@@ -18,9 +19,10 @@ def home_view(request):
     return render(request, 'products/home.html', {'products': products, 'categories': categories})
 
 def product_detail_view(request, pk):
+    user: User = request.user
     product = get_object_or_404(Product, pk=pk)
     reviews = product.reviews.all()
-    review_form = ReviewForm()
+    bargain = product.bargainoffer_set.filter(buyer=user, is_accepted=True).order_by("-accepted_at").first()
 
     can_review = False
     already_reviewed = False
@@ -56,6 +58,7 @@ def product_detail_view(request, pk):
         'review_form': review_form,
         'can_review' : can_review,
         'already_reviewed' : already_reviewed,
+        'bargain': bargain,
     })
 
 def products_view(request):
@@ -120,14 +123,16 @@ def respond_bargain_offer_view(request, offer_id, action):
     offer = get_object_or_404(BargainOffer , id=offer_id)
 
     if offer.product.seller != request.user:
-        messages.error(request, 'You are not elligible')
+        messages.error(request, 'You are not eligible')
         return redirect('home')
 
     if action == 'accept':
         offer.is_accepted = True
-        messages.success(request, 'accpeted the bargain')
+        offer.accepted_at = timezone.now()
+        messages.success(request, 'accepted the bargain')
     elif action == 'reject':
         offer.is_accepted = False
+        offer.accepted_at = None
         messages.success(request, 'rejected the bargain')
 
     offer.save()
@@ -140,7 +145,7 @@ def seller_dashboard_view(request):
         return redirect('home')
 
     products = Product.objects.filter(seller=request.user)
-    return render(request, 'products/seller_dashboard.html', {'products': products})
+    return render(request, 'products/product_dashboard.html', {'products': products})
 
 @login_required
 def delete_review_view(request, pk):

@@ -1,5 +1,7 @@
 from django.db import models
 from user.models import User
+from django.utils import timezone
+from datetime import timedelta
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -35,6 +37,12 @@ class BargainOffer(models.Model):
     buyer = models.ForeignKey(User, on_delete=models.CASCADE)
     offer_price = models.DecimalField(max_digits=10, decimal_places=2)
     is_accepted = models.BooleanField(null=True, blank=True)  # None = pending
+    accepted_at = models.DateTimeField(null=True, blank=True)
+
+    def is_active(self):
+        if self.is_accepted and self.accepted_at:
+            return timezone.now() < self.accepted_at + timedelta(days=7)
+        return False
 
     def __str__(self):
         return f'{self.buyer.username} offered {self.offer_price}'
