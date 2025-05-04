@@ -1,35 +1,50 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Order History</h2>
 
-{% for order in orders %}
-<div class="card mb-3">
-  <div class="card-body">
-    <h5>Order #{{ order.id }} - {{ order.created_at|date:"SHORT_DATE_FORMAT" }}</h5>
-    <p>Status: {{ order.status }} | Payment: {{ order.payment_method }}</p>
-    <p>Total: ${{ order.total_price }}</p>
-    <p>Address: {{ order.address }}</p>
+<div class="container py-5">
+  <h2 class="mb-4 text-center">📦 Order History</h2>
 
-    <hr>
-    <h6>Items:</h6>
-    <ul class="list-group">
-      {% for item in order.orderitem_set.all %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <a href="{% url 'product_detail' item.product.pk%}"> <strong>{{ item.product.name }}</strong><br></a>
-          {% if order.status == "Completed" %}
-          <a href="{% url 'product_detail' item.product.pk %}">Add a review</a><br>
-          {% endif %}
-          Quantity: {{ item.quantity }}<br>
-          Price: ${{ item.price }}<br>
-          Subtotal: ${{ item.subtotal }}
-        </div>
-      </li>
-      {% endfor %}
-    </ul>
+  {% for order in orders %}
+  <div class="card shadow-sm mb-4 rounded-4">
+    <div class="card-body">
+      <h5 class="card-title">
+        🧾 Order #{{ order.id }}
+        <small class="text-muted">({{ order.created_at|date:"M d, Y" }})</small>
+      </h5>
+
+      <p class="mb-1"><strong>Status:</strong> {{ order.status }}</p>
+      <p class="mb-1"><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+      <p class="mb-1"><strong>Total:</strong> ${{ order.total_price }}</p>
+      <p class="mb-3"><strong>Address:</strong> {{ order.address }}</p>
+
+      <h6 class="mt-4">🛍️ Items</h6>
+      <ul class="list-group list-group-flush">
+        {% for item in order.orderitem_set.all %}
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between">
+            <div>
+              <a href="{% url 'product_detail' item.product.pk %}" class="fw-bold text-decoration-none text-dark">
+                {{ item.product.name }}
+              </a><br>
+              Quantity: {{ item.quantity }}<br>
+              Price: ${{ item.price }}<br>
+              Subtotal: ${{ item.subtotal }}
+
+              {% if order.status == "Completed" %}
+                <div class="mt-2">
+                  <a href="{% url 'product_detail' item.product.pk %}" class="btn btn-sm btn-outline-primary">Add a review</a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
+  {% empty %}
+  <p class="text-center text-muted">No orders yet.</p>
+  {% endfor %}
 </div>
-{% empty %}
-<p>No orders yet.</p>
-{% endfor %}
+
 {% endblock %}

@@ -1,67 +1,74 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <style>
   .product-img {
     max-width: 100%;
     height: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   .review-card {
-    border: 1px solid #ddd;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
     border-radius: 0.5rem;
     background-color: #f8f9fa;
   }
 </style>
 
-<div class="container mt-5">
-  <div class="row">
+<div class="container py-5">
+  <div class="row align-items-center g-5">
     <div class="col-md-6">
       <img src="{{ product.image.url }}" class="product-img" alt="{{ product.name }}">
     </div>
     <div class="col-md-6">
-      <h2>{{ product.name }}</h2>
+      <h2 class="fw-bold">{{ product.name }}</h2>
       {% if bargain %}
-        <p class="text-muted">${{ bargain.offer_price }}</p>
+        <p class="fs-4 text-success fw-semibold">${{ bargain.offer_price }}</p>
       {% else %}
-        <p class="text-muted">${{ product.price }}</p>
+        <p class="fs-4 text-muted">${{ product.price }}</p>
       {% endif %}
-      <p>{{ product.description }}</p>
+      <p class="lead">{{ product.description }}</p>
 
       {% if user.is_customer %}
-        <div class="d-grid gap-2 d-md-block">
-          <a href="{% url 'bargain_offer' product.pk %}" class="btn btn-warning me-2">Offer Price</a>
-          <a href="{% url 'add_to_cart' product.pk %}" class="btn btn-primary">Add to Cart</a>
+        <div class="mt-4 d-flex flex-wrap gap-3">
+          <a href="{% url 'bargain_offer' product.pk %}" class="btn btn-warning btn-lg">💬 Offer Price</a>
+          <a href="{% url 'add_to_cart' product.pk %}" class="btn btn-primary btn-lg">🛒 Add to Cart</a>
         </div>
       {% endif %}
 
       {% if not user.is_authenticated %}
-        <p class="mt-3"><a href="{% url 'login' %}">Login</a> to review or make an offer.</p>
+        <p class="mt-4"><a href="{% url 'login' %}" class="link-primary fw-medium">Login</a> to review or make an offer.</p>
       {% endif %}
     </div>
   </div>
 
-  <div class="mt-5">
-    <h3>Reviews</h3>
+  <hr class="my-5">
+
+  <div class="reviews-section">
+    <h3 class="mb-4">⭐ Customer Reviews</h3>
     {% for review in reviews %}
       <div class="review-card">
-        <p><strong>{{ review.user.username }}</strong>: {{ review.rating }}/5</p>
-        <p>{{ review.comment }}</p>
+        <p class="mb-1"><strong>{{ review.user.username }}</strong> rated <span class="text-warning">{{ review.rating }}/5</span></p>
+        <p class="mb-2">{{ review.comment }}</p>
         {% if review.user == request.user %}
           <form action="{% url 'delete_review' review.pk %}" method="post" class="d-inline">
             {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-danger">Delete your Review</button>
+            <button type="submit" class="btn btn-sm btn-outline-danger">🗑️ Delete your Review</button>
           </form>
         {% endif %}
       </div>
+    {% empty %}
+      <p class="text-muted">No reviews yet. Be the first to review this product!</p>
     {% endfor %}
+  </div>
 
-    {% if user.is_authenticated and user.is_customer %}
+  {% if user.is_authenticated and user.is_customer %}
+    <div class="mt-5">
       {% if can_review %}
-        <h4 class="mt-4">Add Review</h4>
-        <form method="POST">
+        <h4 class="mb-3">📝 Add a Review</h4>
+        <form method="POST" class="p-4 bg-light rounded shadow-sm">
           {% csrf_token %}
           <div class="mb-3">
             {{ review_form.as_p }}
@@ -69,12 +76,11 @@
           <button type="submit" class="btn btn-success">Submit Review</button>
         </form>
       {% elif already_reviewed %}
-        <p class="text-success">You have already reviewed the product.</p>
+        <p class="text-success fw-semibold">✅ You have already reviewed the product.</p>
       {% else %}
-        <p class="text-success">You can only review the product once after completing a purchase.</p>
+        <p class="text-info fw-semibold">ℹ️ You can only review the product once after completing a purchase.</p>
       {% endif %}
-    {% endif %}
-  </div>
+    </div>
+  {% endif %}
 </div>
-
 {% endblock %}
