@@ -22,7 +22,9 @@ def product_detail_view(request, pk):
     user: User = request.user
     product = get_object_or_404(Product, pk=pk)
     reviews = product.reviews.all()
-    bargain = product.bargainoffer_set.filter(buyer=user, is_accepted=True).order_by("-accepted_at").first()
+    bargain = None
+    if (not user.is_anonymous) and user.is_customer():
+        bargain = product.bargainoffer_set.filter(buyer=user, is_accepted=True).order_by("-accepted_at").first()
 
     can_review = False
     already_reviewed = False
