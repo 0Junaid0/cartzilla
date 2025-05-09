@@ -1,23 +1,2 @@
-{% extends 'base.html' %}
-{% block content %}
-<style>
-  .bargain-container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 2rem;
-    background-color: #f8f9fa;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
-</style>
 
-<div class="bargain-container">
-  <h2 class="mb-4 text-center">Make a Bargain Offer</h2>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-warning mt-3">Submit Offer</button>
-  </form>
-</div>
-{% endblock %}
 
